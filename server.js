@@ -73,11 +73,16 @@ app.put('/usuarios/:id', (req, res) => {
 
 app.delete('/usuarios/:id', (req, res) => {
     const id = Number(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ erro: "ID inválido" });
+    }
     const index = usuarios.findIndex(u => u.id === id);
-
     if (index === -1) {
         return res.status(404).json({ erro: "Usuário não encontrado" });
     }
+    usuarios.splice(index, 1);
+    return res.status(204).send();
+});
 
     usuarios.splice(index, 1); // remove do array
     return res.status(204).send(); // 204 No Content = deletado com sucesso
