@@ -54,6 +54,39 @@ app.delete('/usuarios/:id', (req, res) => {
 
     usuarios.splice(index, 1);
     return res.status(204).send();
+app.get('/usuarios', (req, res) => {
+    const { nome } = req.query;
+    if (nome) {
+        const filtrados = usuarios.filter(u => 
+            u.nome.toLowerCase().includes(nome.toLowerCase())
+        );
+        return res.json(filtrados);
+    }
+    res.json(usuarios);
+});
+
+app.post('/usuarios', (req, res) => {
+    const { nome, email } = req.body || {};
+
+    if (!nome?.trim() || !email?.trim()) {
+        return res.status(400).json({
+            erro: "Nome e email são obrigatórios"
+        });
+    }
+
+    const novoId = usuarios.length > 0
+        ? Math.max(...usuarios.map(u => u.id)) + 1
+        : 1;
+
+    const novoUsuario = {
+        id: novoId,
+        nome: nome.trim(),
+        email: email.trim()
+    }
+
+    usuarios.push(novoUsuario);
+
+    return res.status(201).json(novoUsuario);
 });
 
 app.listen(PORT, () => {
