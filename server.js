@@ -10,6 +10,50 @@ let usuarios = [
     { id: 3, nome: "Maria",  idade: 30 },
 ];
 
+app.get('/usuarios/:id', (req, res) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ erro: "ID inválido" });
+    }
+    const usuario = usuarios.find(u => u.id === id);
+    if (!usuario) {
+        return res.status(404).json({ erro: "Usuário não encontrado" });
+    }
+    return res.json(usuario);
+});
+
+app.put('/usuarios/:id', (req, res) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ erro: "ID inválido" });
+    }
+    const { nome, email, idade } = req.body;
+
+    const usuario = usuarios.find(u => u.id === id);
+    if (!usuario) {
+        return res.status(404).json({ erro: "Usuário não encontrado" });
+    }
+
+    if (nome?.trim()) usuario.nome = nome.trim();
+    if (email?.trim()) usuario.email = email.trim();
+    if (idade !== undefined) usuario.idade = idade;
+
+    return res.json(usuario);
+});
+
+app.delete('/usuarios/:id', (req, res) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ erro: "ID inválido" });
+    }
+    const index = usuarios.findIndex(u => u.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ erro: "Usuário não encontrado" });
+    }
+
+    usuarios.splice(index, 1);
+    return res.status(204).send();
 app.get('/usuarios', (req, res) => {
     const { nome } = req.query;
     if (nome) {
